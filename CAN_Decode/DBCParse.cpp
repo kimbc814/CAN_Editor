@@ -59,7 +59,7 @@ int parseDbcFile(const QString &filename) {
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "Error: Unable to open DBC file" << filename;
-        return -1; // 파일 열기 실패
+        return -1; 
     }
 
     QTextStream in(&file);
@@ -67,7 +67,7 @@ int parseDbcFile(const QString &filename) {
         QString line = in.readLine().trimmed();
         if (line.startsWith("BO_ ")) {
             QStringList messageParts = line.split(" ");
-            if (messageParts.size() < 5) continue; // 메시지 형식이 맞지 않으면 건너뛰기
+            if (messageParts.size() < 5) continue; 
 
             CanMessage message;
             message.id = messageParts[1].toInt();
@@ -76,24 +76,24 @@ int parseDbcFile(const QString &filename) {
             // 신호(SG_) 파싱 시작
             while (!in.atEnd()) {
                 line = in.readLine().trimmed();
-                if (!line.startsWith("SG_ ")) break; // 다음 메시지에 도달하면 중단
+                if (!line.startsWith("SG_ ")) break; 
 
                 QStringList signalParts = line.split(" ");
-                if (signalParts.size() < 10) continue; // 신호 형식이 맞지 않으면 건너뛰기
+                if (signalParts.size() < 10) continue; 
 
                 CanSignal signal;
                 signal.name = signalParts[1];
                 QStringList startBitLength = signalParts[3].split("|");
                 signal.startBit = startBitLength[0].toInt();
                 signal.bitLength = startBitLength[1].split("@")[0].toInt();
-                signal.edian = startBitLength[1].split("@")[1].left(1); // Endian 정보 추출 ('0' 또는 '1')
+                signal.edian = startBitLength[1].split("@")[1].left(1); 
                 QStringList scaleOffset = signalParts[4].remove('(').remove(')').split(",");
                 signal.scaleFactor = scaleOffset[0].toDouble();
                 signal.offset = scaleOffset[1].toDouble();
                 QStringList minMax = signalParts[5].remove('[').remove(']').split("|");
                 signal.min = minMax[0].toDouble();
                 signal.max = minMax[1].toDouble();
-                signal.unit = signalParts[6].remove('\"'); // 단위 정보, 양쪽 따옴표 제거
+                signal.unit = signalParts[6].remove('\"'); 
 
                 message.l_signals.append(signal);
             }
@@ -103,7 +103,7 @@ int parseDbcFile(const QString &filename) {
     }
 
     file.close();
-    return 1; // 성공적으로 파일을 파싱함
+    return 1; 
 }
 
 int parseDbcFile(const QString &filename) {
@@ -214,7 +214,7 @@ void decodeCanData(){
                             }
                         }
                     }
-                    //문자열 쭉 깔렸으니 스타트부터 갯수개 추출후 십진수 바꿔서 연산때리고 값 도출하는 코드 작성
+                    
                     for(int j = signal.startBit; j <signal.startBit + signal.bitLength ; j++){
                         tempdata_bin = tempdata_bin +tempdata[j];
                     }

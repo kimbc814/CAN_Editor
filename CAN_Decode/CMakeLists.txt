@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.14)
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/CAN_Access/include")
 project(DBC_Edit VERSION 0.1 LANGUAGES CXX)
 
@@ -9,16 +9,17 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-#set(CMAKE_CXX_FLAGS "-fpermissive -m32")
+add_compile_options(-Wa,-mbig-obj)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 #find_package(Qt${QT_VERSION_MAJOR}Widgets REQUIRED)
 #find_package(Qt${QT_VERSION_MAJOR}Charts REQUIRED)
+find_package(Qt6 COMPONENTS Core Widgets Charts REQUIRED)
 find_package(Qt6 REQUIRED COMPONENTS Charts)
 find_package(Qt6 REQUIRED COMPONENTS Core Concurrent)
 find_package(Qt6 REQUIRED COMPONENTS Core Network)
-
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Widgets PrintSupport)
 set(PROJECT_SOURCES
         main.cpp
         mainwindow.cpp
@@ -32,6 +33,10 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
         DBCParse.cpp
         DBCParse.h
+        chart_histoWindow.h
+        chart_histoWindow.cpp
+        qcustomplot.h
+        qcustomplot.cpp
 
     )
 # Define target properties for Android with Qt 6 as:
@@ -51,14 +56,21 @@ else()
         )
     endif()
 endif()
-
-
-
+#set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-linker-plugin -flto")
+#set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-allow-multiple-definition")
+#add_compile_options(-ffunction-sections -fdata-sections )
+#set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --gc-sections")
+#set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wa,-mbig-obj")
 
 target_link_libraries(DBC_Edit PRIVATE Qt6::Core Qt6::Concurrent)
-target_link_libraries(DBC_Edit PRIVATE Qt6::Charts)
-target_link_libraries(DBC_Edit PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(DBC_Edit PRIVATE Qt6::Widgets Qt6::Charts)
 target_link_libraries(DBC_Edit PRIVATE Qt6::Core Qt6::Network)
+target_link_libraries(${PROJECT_NAME} PRIVATE
+  Qt${QT_VERSION_MAJOR}::Core
+  Qt${QT_VERSION_MAJOR}::Gui
+  Qt${QT_VERSION_MAJOR}::Widgets
+  Qt${QT_VERSION_MAJOR}::PrintSupport
+)
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
 # explicit, fixed bundle identifier manually though.

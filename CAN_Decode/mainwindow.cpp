@@ -15,11 +15,10 @@ QString g_msg_debug1="";
 QString g_msg_debug2="";
 int g_debug1_cnt=0;
 int g_debug2_cnt=0;
-
+//ChartDialog *chartDialog=nullptr;
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindow),tcpServer(nullptr),
-    clientSocket(nullptr)
+    , ui(new Ui::MainWindow),tcpServer(nullptr), clientSocket(nullptr),chartDialog(nullptr)
 
 {
     ui->setupUi(this);
@@ -62,6 +61,13 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->txt_DBCfilepath->setText("");
     ui->txt_debug_readtab->setText("");
+
+    ui->NUM_TPS->setDigitCount(6);
+    ui->NUM_RPM->setDigitCount(6);
+    ui->NUM_VS->setDigitCount(6);
+    ui->NUM_TEMP_ENG->setDigitCount(6);
+    ui->NUM_SAS_Angle->setDigitCount(6);
+    chart_on_flag=0;
 }
 
 MainWindow::~MainWindow()
@@ -70,10 +76,8 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-
 void MainWindow::on_bt_msg_clicked()
 {
-
     QString CAN_id = ui->CAN_ID->toPlainText();
     QString msg_name = ui->msg_name->toPlainText();
     QString msg_len = QString::number(ui->msg_length->value());
@@ -296,99 +300,6 @@ void MainWindow::on_bt_OpenDBC_clicked()
 
 }
 
-/*
-void MainWindow::on_bt_OpenDBC_clicked()
-{
-    g_debug1_cnt++;
-    // 파일 탐색기창 제목
-    QString str_caption = "Open File";
-    QString str_dir     = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
-    QString str_filters = "DBC files (*.dbc);; All Files (*.*)";
-    // 파일 저장할 폴더 경로 가져오기
-    QString filePathDBC = QFileDialog::getOpenFileName(this, str_caption, str_dir, str_filters);
-    QFile fileDBC(filePathDBC);
-    if(!fileDBC.exists()) {    // 파일이 존재하지 않는다면
-        g_msg_debug1 = g_msg_debug1 +QString::number(g_debug1_cnt) +"  Failed to Open DBC file\n";
-    } else {
-        if(parseDbcFile(filePathDBC)){
-            g_msg_debug1 = g_msg_debug1 +QString::number(g_debug1_cnt) +"  Failed to Read DBC file\n";
-        } else{
-            g_msg_debug1 = g_msg_debug1 +QString::number(g_debug1_cnt) +"  DBC Read Successfully\n";
-            ui->txt_DBCfilepath->setText(filePathDBC);
-        }
-    }
-    ui->txt_debug_readtab->setText(g_msg_debug1);
-    ui->txt_debug_readtab->verticalScrollBar()->setValue(ui->txt_debug_readtab->verticalScrollBar()->maximum());
-}
-void MainWindow::on_bt_OpenData_clicked()
-{
-    g_debug1_cnt++;
-    // 파일 탐색기창 제목
-    QString str_caption = "Open File";
-    QString str_dir     = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
-    QString str_filters = "DBC files (*.trc);; All Files (*.*)";
-    // 파일 저장할 폴더 경로 가져오기
-    QString filePathData = QFileDialog::getOpenFileName(this, str_caption, str_dir, str_filters);
-    QFile fileDBC(filePathData);
-    if(!fileDBC.exists()) {    // 파일이 존재하지 않는다면
-        g_msg_debug1 = g_msg_debug1 +QString::number(g_debug1_cnt) +"  Failed to Open Data file\n";
-    } else {
-        if(parseTrcFile(filePathData)){
-            g_msg_debug1 = g_msg_debug1 +QString::number(g_debug1_cnt) +"  Failed to Read Data file\n";
-        } else{
-            g_msg_debug1 = g_msg_debug1 +QString::number(g_debug1_cnt) +"  Data Read Successfully\n";
-            ui->comboBox_msgid->clear();
-            ui->comboBox_sgname->clear();
-            decodeCanData();
-            ui->txt_Datafilepath->setText(filePathData);
-        }
-    }
-    for(int i=0;i<l_interpreted_data.size();i++){
-        ui->comboBox_msgid->addItem(QString("Item"), QVariant::fromValue(l_interpreted_data[i].id));
-        for (int j = 0; j < l_interpreted_data[i].sg_data.size(); ++j) {
-            ui->comboBox_sgname->addItem(QString("Item"), QVariant::fromValue(l_interpreted_data[i].sg_data[j].name));
-        }
-    }
-
-
-
-
-
-    ui->txt_debug_readtab->setText(g_msg_debug1);
-    ui->txt_debug_readtab->verticalScrollBar()->setValue(ui->txt_debug_readtab->verticalScrollBar()->maximum());
-}
-void MainWindow::on_comboBox_sgname_currentTextChanged(const QString &arg1)
-{
-    QString now_msg_id = ui->comboBox_msgid->currentText();
-    QString now_sg_name = ui->comboBox_sgname->currentText();
-    for (int id_index = 0; id_index < l_interpreted_data.size(); ++id_index) {
-        if(now_msg_id == QString::number(l_interpreted_data[id_index].id)){
-            for (int name_index = 0; name_index < l_interpreted_data[id_index].sg_data.size(); ++name_index) {
-                if(now_sg_name == l_interpreted_data[id_index].sg_data[name_index].name){
-                    QLineSeries *series = new QLineSeries();
-                    series->setName(now_sg_name);
-                    for(int data_num=0;data_num<l_interpreted_data[id_index].sg_data[name_index].data.size();data_num++){
-                        series->append(data_num,l_interpreted_data[id_index].sg_data[name_index].data[data_num]);
-                    }
-                    QChart *chart = new QChart();
-                    //chart->legend()->hide();
-                    chart->addSeries(series);
-                    chart->setTitle(now_msg_id + " " + now_sg_name);
-                    chart->createDefaultAxes();
-                    QChartView *chartView = new QChartView(chart);
-                    chartView->setRenderHint(QPainter::Antialiasing);
-                    chartView->setGeometry(10, 320, 591, 401);
-                    setCentralWidget(chartView);
-
-                }
-            }
-        }
-
-    }
-}
-*/
-
-
 void MainWindow::on_sg_select_combo_currentIndexChanged(int index)
 {
     if (index >= 0 && index < messages.size()) {
@@ -460,13 +371,14 @@ void MainWindow::on_pushButton_mode2_clicked()
         ui->txt_debug_readtab_2->verticalScrollBar()->setValue(ui->txt_debug_readtab_2->verticalScrollBar()->maximum());
         ui->live_table->setRowCount(0);
         ui->live_table->setColumnCount(5);
+
         QStringList headerLabels;
         //for (const Signal &signal : messages[ui->sg_select_combo_2->currentIndex()].signalList) {
         //headerLabels <<signal.name;
-        //headerLabels << "쓰로틀 퍼센트"<<"RPM"<<"속도"<<"엔진 온도"<<"스티어 각도";
+        headerLabels << "쓰로틀 퍼센트"<<"RPM"<<"속도"<<"엔진 온도"<<"스티어 각도";
         //headerLabels << "Throttling"<<"RPM"<<"KM/H"<<"ENG_TEMP"<<"Steering Angle";
         //headerLabels << "Throttle Position"<<"RPM"<<"Vehicle Speed"<<"Engine Temperature"<<"Steering Angle";
-        headerLabels << "TPS"<<"RPM"<<"VS"<<"TEMP_ENG"<<"SAS_Angle";
+        //headerLabels << "TPS"<<"RPM"<<"VS"<<"TEMP_ENG"<<"SAS_Angle";
         //}
         ui->live_table->setHorizontalHeaderLabels(headerLabels);
         ui->live_table->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -490,6 +402,7 @@ void MainWindow::on_pushButton_close_clicked()
         ui->live_table->clear();
         ui->live_table->setRowCount(0);
         ui->live_table->setColumnCount(0);
+
         live_end_flag=1;
         g_debug2_cnt++;
         g_msg_debug2 = g_msg_debug2 +QString::number(g_debug2_cnt) +"  Device Close Successfully\n";
@@ -519,6 +432,7 @@ void MainWindow::on_bt_Clear_clicked()
     ui->sg_table->clear();
     ui->sg_table->setColumnCount(0);
     ui->sg_table->setRowCount(0);
+
     g_debug1_cnt++;
     g_msg_debug1 = g_msg_debug1 +QString::number(g_debug1_cnt) +"  Clear All\n";
     ui->txt_debug_readtab->setText(g_msg_debug1);
@@ -538,11 +452,11 @@ void MainWindow::on_NewConnection()
     live_end_flag=1;
 }
 #define MASK64(nbits) ((0xffffffffffffffff)>> (64-nbits))
-void MainWindow::dcodeMsgSg(int msg_id, const char* sg_name, const QString& _data,int colindex){
+double MainWindow::dcodeMsgSg(int msg_id, const char* sg_name, const QString& _data, QLCDNumber* lcd){//,QLineSeries *series){//int colindex){
     QStringList parts = _data.split(' ',Qt::SkipEmptyParts);
     int ID= parts[0].toInt(nullptr,16);
     if(ID != msg_id){
-        return;
+        return 7777;
     }
     int length=parts[1].toInt();
     uint8_t data[8]= {0,};
@@ -554,12 +468,12 @@ void MainWindow::dcodeMsgSg(int msg_id, const char* sg_name, const QString& _dat
     for(int i=0;i<messages.size();i++){
         if(messages[i].id==msg_id)msg_address=i;
     }
-    if(msg_address<0)return;
+    if(msg_address<0)return 7777;
     int sg_address=-1;
     for(int i=0;i<messages[msg_address].signalList.size();i++){
         if(messages[msg_address].signalList[i].name==sg_name)sg_address=i;
     }
-    if(sg_address<0)return;
+    if(sg_address<0)return 7777;
     const Signal &signal = messages[msg_address].signalList[sg_address];
     uint8_t start_byte =signal.startBit / 8;
     uint8_t startbit_in_byte=signal.startBit % 8;
@@ -592,8 +506,14 @@ void MainWindow::dcodeMsgSg(int msg_id, const char* sg_name, const QString& _dat
     double scaledValue = ( (int64_t) target ) * signal.scale + signal.offset;
     if(strcmp(sg_name, "TPS") == 0 && scaledValue <=0.5f)scaledValue=0;
     else if(strcmp(sg_name, "SAS_Angle") == 0 && scaledValue >=600)scaledValue-=6553.5f;
+    QString val_str = QString::number(scaledValue, 'f', 1);
+    lcd->display(scaledValue);
+    return scaledValue;
+    //series->append(QPointF(series->count(), scaledValue));
+    /*
     QTableWidgetItem *item = new QTableWidgetItem(QString::number(scaledValue));
     ui->live_table->setItem(0, colindex, item);
+    */
 }
 void MainWindow::decodeCan(QString _data){
 
@@ -647,6 +567,7 @@ void MainWindow::decodeCan(QString _data){
             }
         }
 }
+
 void MainWindow::on_ReadyRead()
 {
     QByteArray data = clientSocket->readAll();
@@ -654,13 +575,35 @@ void MainWindow::on_ReadyRead()
         //qDebug() << "Received:" << QString(data);
         decodeCan(data);
     }
+    else if(live_end_flag == 3 && chart_on_flag == 1){
+        //qDebug() << "Received:" << QString(data);
+        chartDialog->appendTPS(dcodeMsgSg(809,"TPS",data,ui->NUM_TPS));
+        chartDialog->appendRPM(dcodeMsgSg(790,"N",data,ui->NUM_RPM));
+        chartDialog->appendVS(dcodeMsgSg(790,"VS",data,ui->NUM_VS));
+        chartDialog->appendTEMPENG(dcodeMsgSg(809,"TEMP_ENG",data,ui->NUM_TEMP_ENG));
+        chartDialog->appendSASANGLE(dcodeMsgSg(688,"SAS_Angle",data,ui->NUM_SAS_Angle));
+    }
     else if(live_end_flag == 3){
         //qDebug() << "Received:" << QString(data);
-        dcodeMsgSg(809,"TPS",data,0);
-        dcodeMsgSg(790,"N",data,1);
-        dcodeMsgSg(790,"VS",data,2);
-        dcodeMsgSg(809,"TEMP_ENG",data,3);
-        dcodeMsgSg(688,"SAS_Angle",data,4);
+        dcodeMsgSg(809,"TPS",data,ui->NUM_TPS);
+        dcodeMsgSg(790,"N",data,ui->NUM_RPM);
+        dcodeMsgSg(790,"VS",data,ui->NUM_VS);
+        dcodeMsgSg(809,"TEMP_ENG",data,ui->NUM_TEMP_ENG);
+        dcodeMsgSg(688,"SAS_Angle",data,ui->NUM_SAS_Angle);
     }
 }
 
+
+void MainWindow::on_bt_chart_clicked()
+{
+    if (!chartDialog) {
+        chart_on_flag=1;
+        chartDialog = new ChartDialog(this);
+        chartDialog->setWindowTitle("Chart Histogram");
+        //chartDialog->resize(800,300);
+        chartDialog->exec();  
+        delete chartDialog;
+        chartDialog = nullptr;
+        chart_on_flag=0;
+    }
+}
