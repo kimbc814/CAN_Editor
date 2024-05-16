@@ -571,8 +571,10 @@ void MainWindow::decodeCan(QString _data){
 void MainWindow::on_ReadyRead()
 {
     QByteArray data = clientSocket->read(2);
+    qDebug() << "Received:" << QString(data);
     if (data.size() == 2) {
         data.append(clientSocket->read(static_cast<quint8>(data[1])));
+        //qDebug() << "Received:" << QString(data);
     }
     if(live_end_flag ==2){
         //qDebug() << "Received:" << QString(data);

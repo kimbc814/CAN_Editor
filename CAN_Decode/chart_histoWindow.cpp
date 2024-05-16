@@ -9,18 +9,15 @@ ChartDialog::ChartDialog(QWidget *parent)
     cnt_TEMP_ENG=0;
     cnt_SAS_Angle=0;
     tm_cnt=0;
-    QVBoxLayout *layout_y = new QVBoxLayout(this);
-    QHBoxLayout *layout_x = new QHBoxLayout(this);
-    layout_y->addLayout(layout_x);
-    QHBoxLayout *layout_x1 = new QHBoxLayout(this);
-    QHBoxLayout *layout_x2 = new QHBoxLayout(this);
-    QHBoxLayout *layout_x3 = new QHBoxLayout(this);
-    layout_y->addLayout(layout_x1);
-    layout_y->addLayout(layout_x3);
-    layout_y->addLayout(layout_x2);
-
-    QVector<QString> plot_name={"가속페달 ","RPM","속도","엔진 온도","스티어 각도"};
-    QVector<QString> plot_axis={"%","RPM","Km/h","°C","deg","ms","cnt"};
+    layout_y = new QVBoxLayout(this);
+    layout_x = new QHBoxLayout(this);
+    layout_x1 = new QHBoxLayout(this);
+    layout_x2 = new QHBoxLayout(this);
+    layout_x3 = new QHBoxLayout(this);
+    layout_y->addLayout(layout_x3);//checkbox
+    layout_y->addLayout(layout_x2);//lineindex
+    layout_y->addLayout(layout_x);//chart
+    layout_y->addLayout(layout_x1);//histogram
 
     for(int i=0;i<5;i++){
         plots[i]= new QCustomPlot();
@@ -38,25 +35,17 @@ ChartDialog::ChartDialog(QWidget *parent)
         plots[i]->graph(0)->setLineStyle(QCPGraph::lsLine);
         layout_x->addWidget(plots[i]);
 
-        raw_data[i]=new QVector<double>();
-        plots_b[i]= new QCustomPlot();
-        plots_b[i]->setFixedSize(400,300);
-        plots_b[i]->yAxis->setLabel(plot_axis[i]);
-        plots_b[i]->xAxis->setLabel(plot_axis[6]);
-        bins[i]= new QVector<double>();
-        bar_data[i]= new QVector<double>();
-        histogram[i] = new QCPBars(plots_b[i]->xAxis, plots_b[i]->yAxis);
-        histogram[i]->setData(*bins[i], *bar_data[i]);
-        plots_b[i]->rescaleAxes();
-        layout_x1->addWidget(plots_b[i]);
+
     }
-    //layout_state[0] = new QVBoxLayout(this);
-    //QLabel* checkBox_text= new QLabel("AutoScale Check Box",this);
     QCheckBox* checkBox = new QCheckBox("AutoScale Check Box", this);
     checkBox->setChecked(false);
     connect(checkBox, &QCheckBox::toggled, this, &ChartDialog::onCheckBoxToggled);
     //layout_state[0]->addWidget(checkBox_text);
     layout_x3->addWidget(checkBox);
+    QCheckBox* cb_histogram =new QCheckBox("Histogram On",this);
+    cb_histogram->setChecked(false);
+    connect(cb_histogram, &QCheckBox::toggled, this, &ChartDialog::onCb_histogramToggled);
+    layout_x3->addWidget(cb_histogram);
     //설정한 범위만 보기, 경고범위 지정
     for(int i=0;i<5;i++){
         if(layout_state[i]==nullptr)layout_state[i] = new QVBoxLayout(this);
@@ -68,6 +57,10 @@ ChartDialog::ChartDialog(QWidget *parent)
         layout_state[i]->addWidget(lineEdit_range_x[i]);
         layout_state[i]->addWidget(new QLabel("warning Range",this));
         lineEdit_warning[i] = new QLineEdit(this);
+        layout_state[i]->addWidget(lineEdit_warning[i]);
+        layout_state[i]->addWidget(new QLabel("histogram Range",this));
+        lineEdit_histogram[i] = new QLineEdit(this);
+        lineEdit_histogram[i]->setText("10");
         layout_state[i]->addWidget(lineEdit_warning[i]);
         layout_x2->addLayout(layout_state[i]);
     }
@@ -120,11 +113,48 @@ void ChartDialog::onCheckBoxToggled(bool checked) {
         }
     }
 }
+void ChartDialog::onCb_histogramToggled(bool checked){
+    if (checked) {
+        flag_autoscale=1;
+        QMessageBox::information(this, "Histogram", "Histogram On.");
+        for(int i=0;i<5;i++){
+            histogram_binsize[i]=lineEdit_histogram[i]->text().toInt();
+            raw_data[i]=new QVector<double>();
+            plots_b[i]= new QCustomPlot();
+            plots_b[i]->setFixedSize(400,300);
+            plots_b[i]->xAxis->setLabel(plot_axis[i]);
+            plots_b[i]->yAxis->setLabel(plot_axis[6]);
+            bins[i]= new QVector<double>();
+            bar_data[i]= new QVector<double>();
+            histogram[i] = new QCPBars(plots_b[i]->xAxis, plots_b[i]->yAxis);
+            histogram[i]->setData(*bins[i], *bar_data[i]);
+            plots_b[i]->rescaleAxes();
+            layout_x1->addWidget(plots_b[i]);
+        }
+        flag_histogram=1;
+
+    } else {
+        flag_autoscale=0;
+        QMessageBox::information(this, "Histogram", "Histogram Off.");
+        for(int i=0;i<5;i++){
+            histogram_binsize[i]=0;
+            delete raw_data[i];
+            delete plots_b[i];
+            delete bins[i];
+            delete bar_data[i];
+            delete histogram[i];
+        }
+        flag_histogram=0;
+    }
+}
 void ChartDialog::appendTPS(double _scaledValue){
     if(_scaledValue != 7777 && plots[0]!=nullptr && raw_data[0]!=nullptr){
         //qDebug()<<"TPS : "<<_scaledValue;
         plots[0]->graph(0)->addData(cnt_TPS++,_scaledValue);
         raw_data[0]->append(_scaledValue);
+        if(_scaledValue < range_warning[0].x() || _scaledValue > range_warning[0].y()){
+            flag_warn[0] = 1;
+        }
     }
 }
 void ChartDialog::appendRPM(double _scaledValue){
@@ -132,6 +162,9 @@ void ChartDialog::appendRPM(double _scaledValue){
         //qDebug()<<"\t\tRPM : "<<_scaledValue;
         plots[1]->graph(0)->addData(cnt_RPM++,_scaledValue);
         raw_data[1]->append(_scaledValue);
+        if(_scaledValue < range_warning[1].x() || _scaledValue > range_warning[1].y()){
+            flag_warn[1] = 1;
+        }
     }
 }
 void ChartDialog::appendVS(double _scaledValue){
@@ -139,6 +172,9 @@ void ChartDialog::appendVS(double _scaledValue){
         //qDebug()<<"\t\t\t\tVS : "<<_scaledValue;
         plots[2]->graph(0)->addData(cnt_VS++,_scaledValue);
         raw_data[2]->append(_scaledValue);
+        if(_scaledValue < range_warning[2].x() || _scaledValue > range_warning[2].y()){
+            flag_warn[2] = 1;
+        }
     }
 }
 void ChartDialog::appendTEMPENG(double _scaledValue){
@@ -146,6 +182,9 @@ void ChartDialog::appendTEMPENG(double _scaledValue){
         //qDebug()<<"\t\t\t\t\t\tTEMP_ENG : "<<_scaledValue;
         plots[3]->graph(0)->addData(cnt_TEMP_ENG++,_scaledValue);
         raw_data[3]->append(_scaledValue);
+        if(_scaledValue < range_warning[3].x() || _scaledValue > range_warning[3].y()){
+            flag_warn[3] = 1;
+        }
     }
 }
 void ChartDialog::appendSASANGLE(double _scaledValue){
@@ -153,6 +192,9 @@ void ChartDialog::appendSASANGLE(double _scaledValue){
         //qDebug()<<"\t\t\t\t\t\t\t\tSAS_Angle : "<<_scaledValue;
         plots[4]->graph(0)->addData(cnt_SAS_Angle++,_scaledValue);
         raw_data[4]->append(_scaledValue);
+        if(_scaledValue < range_warning[4].x() || _scaledValue > range_warning[4].y()){
+            flag_warn[4] = 1;
+        }
     }
 }
 
@@ -172,44 +214,43 @@ void ChartDialog::updateChart(){
                 plots[i]->xAxis->setRange(range_min[i].x(), range_max[i].x());
                 rect_warning[i]->topLeft->setCoords(range_min[i].x(), range_warning[i].y()); // 좌측 상단 (x, y)
                 rect_warning[i]->bottomRight->setCoords(range_max[i].x(), range_warning[i].x()); // 우측 하단 (x, y)
-                rect_warning[i]->setBrush(QBrush(QColor(0, 255, 0, 50)));
+                rect_warning[i]->setBrush(QBrush(QColor(0, 255, 0, 80)));
             }
             else{
                 plots[i]->rescaleAxes();
                 rect_warning[i]->topLeft->setCoords(0, range_warning[i].y()); // 좌측 상단 (x, y)
                 rect_warning[i]->bottomRight->setCoords(plots[i]->xAxis->range().upper, range_warning[i].x()); // 우측 하단 (x, y)
-                rect_warning[i]->setBrush(QBrush(QColor(0, 255, 0, 50)));
+                rect_warning[i]->setBrush(QBrush(QColor(0, 255, 0, 80)));
 
             }
-            if(range_warning[i].y()!=0){
-                auto lastIt = plots[i]->graph(0)->data()->constEnd() - 1;
-                QCPGraphData last_data = *lastIt;
-                if(last_data.value < range_warning[i].x() || last_data.value > range_warning[i].y()){
-                    plots[i]->axisRect()->setBackground(QBrush(QColor(255, 0, 0, 50)));
-                }
-                else{
-                    plots[i]->axisRect()->setBackground(QBrush(QColor(255, 255, 255)));
-                }
+            if(range_warning[i].y()!=0 && flag_warn[i]){
+                plots[i]->axisRect()->setBackground(QBrush(QColor(255, 0, 0, 50)));
+                flag_warn[i]=0;
             }
+            else{
+                plots[i]->axisRect()->setBackground(QBrush(QColor(255, 255, 255)));
+            }
+
             plots[i]->yAxis->setRange(range_min[i].y(), range_max[i].y());
             plots[i]->replot();
         }
     }
-    if(tm_cnt%2==0){
+    if(tm_cnt%2==0 && flag_histogram == 1){
         for(int i=0;i<5;i++){
-            replotBar(plots_b[i],histogram[i],raw_data[i],bins[i],bar_data[i]);
+            replotBar(histogram_binsize[i],plots_b[i],histogram[i],raw_data[i],bins[i],bar_data[i]);
         }
     }
 
 }
-void ChartDialog::replotBar(QCustomPlot* plot_b,QCPBars* histogram_,QVector<double>*raw_data,QVector<double>*category, QVector<double>*data_cnt){
+void ChartDialog::replotBar(int binSize,QCustomPlot* plot_b,QCPBars* histogram_,QVector<double>*raw_data,QVector<double>*category, QVector<double>*data_cnt){
     category->clear();
     category->shrink_to_fit();
     data_cnt->clear();
     data_cnt->shrink_to_fit();
+
     double maxValue = *std::max_element(raw_data->begin(), raw_data->end());
     double minValue = *std::min_element(raw_data->begin(), raw_data->end());
-
+    /*
     int binSize;
     if (maxValue <= 100 || minValue >= -100) {
         binSize = 10;
@@ -218,6 +259,7 @@ void ChartDialog::replotBar(QCustomPlot* plot_b,QCPBars* histogram_,QVector<doub
     } else {
         binSize = 50;
     }
+    */
     int numBins_=0;
     int numBins=0;
     if(minValue<0){
