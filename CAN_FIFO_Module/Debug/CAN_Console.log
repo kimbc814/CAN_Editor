@@ -1,0 +1,5 @@
+﻿cl : 명령줄  warning D9035: 'Gm' 옵션은 더 이상 사용되지 않으므로 이후 릴리스에서 제거될 예정입니다.
+  CAN_Console.cpp
+C:\Users\pc_2\Documents\카카오톡 받은 파일\CAN_ExampleFIFO (2)\CAN_Console.cpp(33,9): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\pc_2\Documents\카카오톡 받은 파일\CAN_ExampleFIFO (2)\CAN_Console.cpp(70,30): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+  CAN_Console.vcxproj -> C:\Users\pc_2\Documents\카카오톡 받은 파일\CAN_ExampleFIFO (2)\Debug\CAN_Console.exe
