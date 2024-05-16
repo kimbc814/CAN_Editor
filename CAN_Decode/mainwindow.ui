@@ -33,7 +33,7 @@
      <bool>true</bool>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -993,25 +993,12 @@ Last Line</string>
        <rect>
         <x>10</x>
         <y>280</y>
-        <width>93</width>
+        <width>171</width>
         <height>29</height>
        </rect>
       </property>
       <property name="text">
-       <string>Chart</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="bt_histo">
-      <property name="geometry">
-       <rect>
-        <x>110</x>
-        <y>280</y>
-        <width>93</width>
-        <height>29</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Histogram</string>
+       <string>Chart Histogram</string>
       </property>
      </widget>
     </widget>

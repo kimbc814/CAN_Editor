@@ -570,7 +570,10 @@ void MainWindow::decodeCan(QString _data){
 
 void MainWindow::on_ReadyRead()
 {
-    QByteArray data = clientSocket->readAll();
+    QByteArray data = clientSocket->read(2);
+    if (data.size() == 2) {
+        data.append(clientSocket->read(static_cast<quint8>(data[1])));
+    }
     if(live_end_flag ==2){
         //qDebug() << "Received:" << QString(data);
         decodeCan(data);
@@ -601,7 +604,7 @@ void MainWindow::on_bt_chart_clicked()
         chartDialog = new ChartDialog(this);
         chartDialog->setWindowTitle("Chart Histogram");
         //chartDialog->resize(800,300);
-        chartDialog->exec();  
+        chartDialog->exec();  // 새로운 창 열기
         delete chartDialog;
         chartDialog = nullptr;
         chart_on_flag=0;

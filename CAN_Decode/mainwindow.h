@@ -17,7 +17,7 @@
 #include <QTcpSocket>
 #include "DBCParse.h"
 #include "chart_histoWindow.h"
-#include "qcustomplot.h"
+//#include "qcustomplot.h"
 
 //QT_CHARTS_USE_NAMESPACE
 QT_BEGIN_NAMESPACE
