@@ -35,6 +35,17 @@ ChartDialog::ChartDialog(QWidget *parent)
         plots[i]->graph(0)->setLineStyle(QCPGraph::lsLine);
         layout_x->addWidget(plots[i]);
 
+        raw_data[i]=new QVector<double>();
+        plots_b[i]= new QCustomPlot();
+        plots_b[i]->setFixedSize(400,300);
+        plots_b[i]->xAxis->setLabel(plot_axis[i]);
+        plots_b[i]->yAxis->setLabel(plot_axis[6]);
+        bins[i]= new QVector<double>();
+        bar_data[i]= new QVector<double>();
+        histogram[i] = new QCPBars(plots_b[i]->xAxis, plots_b[i]->yAxis);
+        histogram[i]->setData(*bins[i], *bar_data[i]);
+        plots_b[i]->rescaleAxes();
+        layout_x1->addWidget(plots_b[i]);
 
     }
     QCheckBox* checkBox = new QCheckBox("AutoScale Check Box", this);
@@ -60,8 +71,8 @@ ChartDialog::ChartDialog(QWidget *parent)
         layout_state[i]->addWidget(lineEdit_warning[i]);
         layout_state[i]->addWidget(new QLabel("histogram Range",this));
         lineEdit_histogram[i] = new QLineEdit(this);
-        lineEdit_histogram[i]->setText("10");
-        layout_state[i]->addWidget(lineEdit_warning[i]);
+        lineEdit_histogram[i]->setText("0");
+        layout_state[i]->addWidget(lineEdit_histogram[i]);
         layout_x2->addLayout(layout_state[i]);
     }
 
@@ -119,32 +130,19 @@ void ChartDialog::onCb_histogramToggled(bool checked){
         QMessageBox::information(this, "Histogram", "Histogram On.");
         for(int i=0;i<5;i++){
             histogram_binsize[i]=lineEdit_histogram[i]->text().toInt();
-            raw_data[i]=new QVector<double>();
-            plots_b[i]= new QCustomPlot();
-            plots_b[i]->setFixedSize(400,300);
-            plots_b[i]->xAxis->setLabel(plot_axis[i]);
-            plots_b[i]->yAxis->setLabel(plot_axis[6]);
-            bins[i]= new QVector<double>();
-            bar_data[i]= new QVector<double>();
-            histogram[i] = new QCPBars(plots_b[i]->xAxis, plots_b[i]->yAxis);
-            histogram[i]->setData(*bins[i], *bar_data[i]);
-            plots_b[i]->rescaleAxes();
-            layout_x1->addWidget(plots_b[i]);
         }
-        flag_histogram=1;
+        //flag_histogram=1;
 
     } else {
         flag_autoscale=0;
         QMessageBox::information(this, "Histogram", "Histogram Off.");
         for(int i=0;i<5;i++){
             histogram_binsize[i]=0;
-            delete raw_data[i];
-            delete plots_b[i];
-            delete bins[i];
-            delete bar_data[i];
-            delete histogram[i];
+            raw_data[i]->clear();
+            bins[i]->clear();
+            bar_data[i]->clear();
         }
-        flag_histogram=0;
+        //flag_histogram=0;
     }
 }
 void ChartDialog::appendTPS(double _scaledValue){
@@ -235,14 +233,14 @@ void ChartDialog::updateChart(){
             plots[i]->replot();
         }
     }
-    if(tm_cnt%2==0 && flag_histogram == 1){
+    if(tm_cnt%2==0 ){
         for(int i=0;i<5;i++){
             replotBar(histogram_binsize[i],plots_b[i],histogram[i],raw_data[i],bins[i],bar_data[i]);
         }
     }
 
 }
-void ChartDialog::replotBar(int binSize,QCustomPlot* plot_b,QCPBars* histogram_,QVector<double>*raw_data,QVector<double>*category, QVector<double>*data_cnt){
+void ChartDialog::replotBar(int _binSize,QCustomPlot* plot_b,QCPBars* histogram_,QVector<double>*raw_data,QVector<double>*category, QVector<double>*data_cnt){
     category->clear();
     category->shrink_to_fit();
     data_cnt->clear();
@@ -250,16 +248,19 @@ void ChartDialog::replotBar(int binSize,QCustomPlot* plot_b,QCPBars* histogram_,
 
     double maxValue = *std::max_element(raw_data->begin(), raw_data->end());
     double minValue = *std::min_element(raw_data->begin(), raw_data->end());
-    /*
+
     int binSize;
-    if (maxValue <= 100 || minValue >= -100) {
-        binSize = 10;
-    } else if (maxValue >= 1000 || minValue <= -1000) {
-        binSize = 100;
-    } else {
-        binSize = 50;
+    if(_binSize==0){
+        if (maxValue <= 100 || minValue >= -100) {
+            binSize = 10;
+        } else if (maxValue >= 1000 || minValue <= -1000) {
+            binSize = 100;
+        } else {
+            binSize = 50;
+        }
     }
-    */
+    else binSize=_binSize;
+
     int numBins_=0;
     int numBins=0;
     if(minValue<0){
