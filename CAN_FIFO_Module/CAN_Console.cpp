@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <thread>
 #include <mutex>
+#include <chrono>
+#include <vector>
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -104,28 +106,41 @@ void threadSendSock(SOCKET sock) {
         Sleep(10);
         */
         //DWORD dwWaitResult = WaitForSingleObject(hEvent, 1);
-        for (msgFrame* frame : frames) {
+        std::vector<msgFrame> local_frames;
+        {
             std::lock_guard<std::mutex> lock(frames_mutex);
+            for (msgFrame* frame : frames) {
+                if (frame != nullptr) {
+                    local_frames.push_back(*frame);
+                }
+            }
+        }
+
+        for (const msgFrame& frame : local_frames) {
             // 수신된 메시지 포맷 지정
             char recv_message[100];
             sprintf(recv_message,
                 "%03X %d %02X %02X %02X %02X %02X %02X %02X %02X",
-                frame->_rid, frame->_rlen,
-                (int)(unsigned char)frame->_rdata[0],
-                (int)(unsigned char)frame->_rdata[1],
-                (int)(unsigned char)frame->_rdata[2],
-                (int)(unsigned char)frame->_rdata[3],
-                (int)(unsigned char)frame->_rdata[4],
-                (int)(unsigned char)frame->_rdata[5],
-                (int)(unsigned char)frame->_rdata[6],
-                (int)(unsigned char)frame->_rdata[7]
+                frame._rid, frame._rlen,
+                (int)(unsigned char)frame._rdata[0],
+                (int)(unsigned char)frame._rdata[1],
+                (int)(unsigned char)frame._rdata[2],
+                (int)(unsigned char)frame._rdata[3],
+                (int)(unsigned char)frame._rdata[4],
+                (int)(unsigned char)frame._rdata[5],
+                (int)(unsigned char)frame._rdata[6],
+                (int)(unsigned char)frame._rdata[7]
             );
-            printf("%s\n", recv_message);
-            // 소켓을 통해 메시지를 전송
 
+            printf("%s\n", recv_message);
+
+            // 소켓을 통해 메시지를 전송
             if (send(sock, recv_message, strlen(recv_message), 0) < 0) {
-                printf("Send to server failed : %d\n", WSAGetLastError());
+                printf("Send to server failed: %d\n", WSAGetLastError());
             }
+
+            // 10ms 대기
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
     }
 }
