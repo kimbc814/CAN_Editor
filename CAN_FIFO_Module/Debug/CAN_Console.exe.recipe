@@ -2,7 +2,7 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>F:\kimbyoungchan\coding\sourcetree\CAN_Editor\CAN_FIFO_Module\Debug\CAN_Console.exe</FullPath>
+      <FullPath>C:\Code\DBC_Editor\CAN_FIFO_Module\Debug\CAN_Console.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles />

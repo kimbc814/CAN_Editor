@@ -138,7 +138,7 @@ void ChartDialog::onCb_histogramToggled(bool checked){
         QMessageBox::information(this, "Histogram", "Histogram Off.");
         for(int i=0;i<5;i++){
             histogram_binsize[i]=0;
-            raw_data[i]->clear();
+            //raw_data[i]->clear();
             bins[i]->clear();
             bar_data[i]->clear();
         }
@@ -251,10 +251,10 @@ void ChartDialog::replotBar(int _binSize,QCustomPlot* plot_b,QCPBars* histogram_
 
     int binSize;
     if(_binSize==0){
-        if (maxValue <= 100 || minValue >= -100) {
-            binSize = 10;
-        } else if (maxValue >= 1000 || minValue <= -1000) {
+        if (maxValue >= 700 || minValue <= -700) {
             binSize = 100;
+        } else if (maxValue <= 100 || minValue >= -100) {
+            binSize = 5;
         } else {
             binSize = 50;
         }
@@ -293,5 +293,6 @@ void ChartDialog::replotBar(int _binSize,QCustomPlot* plot_b,QCPBars* histogram_
     }
     histogram_->setData(*category,*data_cnt);
     plot_b->rescaleAxes();
+    plot_b->xAxis->setRange(minValue-binSize, maxValue+binSize);
     plot_b->replot();
 }
