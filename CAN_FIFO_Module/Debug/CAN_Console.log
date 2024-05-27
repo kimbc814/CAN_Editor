@@ -1,5 +1,4 @@
 ﻿cl : 명령줄  warning D9035: 'Gm' 옵션은 더 이상 사용되지 않으므로 이후 릴리스에서 제거될 예정입니다.
   CAN_Console.cpp
-C:\Code\DBC_Editor\CAN_FIFO_Module\CAN_Console.cpp(128,13): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Code\DBC_Editor\CAN_FIFO_Module\CAN_Console.cpp(170,30): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-  CAN_Console.vcxproj -> C:\Code\DBC_Editor\CAN_FIFO_Module\Debug\CAN_Console.exe
+F:\kimbyoungchan\coding\sourcetree\CAN_Editor\CAN_FIFO_Module\CAN_Console.cpp(210,30): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
+  CAN_Console.vcxproj -> F:\kimbyoungchan\coding\sourcetree\CAN_Editor\CAN_FIFO_Module\Debug\CAN_Console.exe
