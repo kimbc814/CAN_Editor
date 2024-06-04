@@ -61,11 +61,18 @@ private slots:
     //Socket관련
     void decodeCan(QString _data);
     double dcodeMsgSg(int msg_id, const char* sg_name, const QString& _data, QLCDNumber* lcd);//, QLineSeries *series);//int colindex);
-
+    void decodeDIDO(const QString& _data);
     void on_NewConnection();
+    void on_DisConnection();
     void on_ReadyRead();
 
     void on_bt_chart_clicked();
+
+    void on_DI_checkBox_clicked(bool checked);
+
+    void on_DO_checkBox_clicked(bool checked);
+
+    void on_Address_lineEdit_textChanged(const QString &arg1);
 
 private:
     Ui::MainWindow *ui;
@@ -73,7 +80,13 @@ private:
     QTcpSocket *clientSocket;
     ChartDialog *chartDialog;
     int chart_on_flag;
-
+    bool di_flag=0;
+    bool do_flag=0;
+    QTimer *timer;
+    QTimer *timer1;
+    void updateDO();
+    void updateDI();
+    QString hexAddress="00";
 };
 
 

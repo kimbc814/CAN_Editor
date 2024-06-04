@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/CAN_Access/include")
-project(DBC_Edit VERSION 0.1 LANGUAGES CXX)
+project(DBC_Editor VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -28,7 +28,7 @@ set(PROJECT_SOURCES
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(DBC_Edit
+    qt_add_executable(DBC_Editor
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         DBCParse.cpp
@@ -40,18 +40,18 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
 
     )
 # Define target properties for Android with Qt 6 as:
-#    set_property(TARGET DBC_Edit APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
+#    set_property(TARGET DBC_Editor APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
 #                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
 # For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
 else()
     if(ANDROID)
-        add_library(DBC_Edit SHARED
+        add_library(DBC_Editor SHARED
             ${PROJECT_SOURCES}
         )
 # Define properties for Android with Qt 5 after find_package() calls as:
 #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else()
-        add_executable(DBC_Edit
+        add_executable(DBC_Editor
             ${PROJECT_SOURCES}
         )
     endif()
@@ -62,9 +62,9 @@ endif()
 #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --gc-sections")
 #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wa,-mbig-obj")
 
-target_link_libraries(DBC_Edit PRIVATE Qt6::Core Qt6::Concurrent)
-target_link_libraries(DBC_Edit PRIVATE Qt6::Widgets Qt6::Charts)
-target_link_libraries(DBC_Edit PRIVATE Qt6::Core Qt6::Network)
+target_link_libraries(DBC_Editor PRIVATE Qt6::Core Qt6::Concurrent)
+target_link_libraries(DBC_Editor PRIVATE Qt6::Widgets Qt6::Charts)
+target_link_libraries(DBC_Editor PRIVATE Qt6::Core Qt6::Network)
 target_link_libraries(${PROJECT_NAME} PRIVATE
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::Gui
@@ -75,9 +75,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 # If you are developing for iOS or macOS you should consider setting an
 # explicit, fixed bundle identifier manually though.
 if(${QT_VERSION} VERSION_LESS 6.1.0)
-  set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.DBC_Edit)
+  set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.DBC_Editor)
 endif()
-set_target_properties(DBC_Edit PROPERTIES
+set_target_properties(DBC_Editor PROPERTIES
     ${BUNDLE_ID_OPTION}
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
@@ -86,12 +86,12 @@ set_target_properties(DBC_Edit PROPERTIES
 )
 
 include(GNUInstallDirs)
-install(TARGETS DBC_Edit
+install(TARGETS DBC_Editor
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
 if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(DBC_Edit)
+    qt_finalize_executable(DBC_Editor)
 endif()

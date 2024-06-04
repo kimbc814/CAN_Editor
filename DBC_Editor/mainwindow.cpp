@@ -29,6 +29,7 @@ MainWindow::MainWindow(QWidget *parent)
         connect(tcpServer, &QTcpServer::newConnection, this, &MainWindow::on_NewConnection);
     }
 
+
     ui->tabWidget->setStyleSheet("background-color: #F5F5F5;");
     ui->CAN_ID->setStyleSheet("background-color: #FFFFFF;");
     ui->msg_name->setStyleSheet("background-color: #FFFFFF;");
@@ -58,7 +59,14 @@ MainWindow::MainWindow(QWidget *parent)
     ui->txt_debug_readtab_2->setStyleSheet("background-color: #FFFFFF;");
     ui->sg_select_combo_2->setStyleSheet("background-color: #FFFFFF;");
     ui->live_table->setStyleSheet("background-color: #FFFFFF;");
-
+    ui->DI_ch_1->setStyleSheet("background-color: #FFFFFF;");
+    ui->DI_ch_2->setStyleSheet("background-color: #FFFFFF;");
+    ui->DI_ch_3->setStyleSheet("background-color: #FFFFFF;");
+    ui->DI_ch_4->setStyleSheet("background-color: #FFFFFF;");
+    ui->DI_ch_5->setStyleSheet("background-color: #FFFFFF;");
+    ui->DI_ch_6->setStyleSheet("background-color: #FFFFFF;");
+    ui->DI_ch_7->setStyleSheet("background-color: #FFFFFF;");
+    ui->DI_ch_8->setStyleSheet("background-color: #FFFFFF;");
     ui->txt_DBCfilepath->setText("");
     ui->txt_debug_readtab->setText("");
 
@@ -68,6 +76,14 @@ MainWindow::MainWindow(QWidget *parent)
     ui->NUM_TEMP_ENG->setDigitCount(6);
     ui->NUM_SAS_Angle->setDigitCount(6);
     chart_on_flag=0;
+
+    timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &MainWindow::updateDI);
+    timer->start(20);
+
+    timer1 = new QTimer(this);
+    connect(timer1, &QTimer::timeout, this, &MainWindow::updateDO);
+    timer1->start(10);
 }
 
 MainWindow::~MainWindow()
@@ -444,12 +460,16 @@ void MainWindow::on_NewConnection()
 {
     clientSocket = tcpServer->nextPendingConnection();
     connect(clientSocket, &QTcpSocket::readyRead, this, &MainWindow::on_ReadyRead);
-    connect(clientSocket, &QTcpSocket::disconnected, clientSocket, &QTcpSocket::deleteLater);
+    connect(clientSocket, &QTcpSocket::disconnected, this, &MainWindow::on_DisConnection);
     g_debug2_cnt++;
     g_msg_debug2 = g_msg_debug2 +QString::number(g_debug2_cnt) +"  Device Connect Successfully\n";
     ui->txt_debug_readtab_2->setText(g_msg_debug2);
     ui->txt_debug_readtab_2->verticalScrollBar()->setValue(ui->txt_debug_readtab_2->verticalScrollBar()->maximum());
     live_end_flag=1;
+}
+void MainWindow::on_DisConnection(){
+    live_end_flag=0;
+    clientSocket->deleteLater();
 }
 #define MASK64(nbits) ((0xffffffffffffffff)>> (64-nbits))
 double MainWindow::dcodeMsgSg(int msg_id, const char* sg_name, const QString& _data, QLCDNumber* lcd){//,QLineSeries *series){//int colindex){
@@ -567,35 +587,66 @@ void MainWindow::decodeCan(QString _data){
             }
         }
 }
+void MainWindow::decodeDIDO(const QString& _data){
+    QStringList parts = _data.split(' ',Qt::SkipEmptyParts);
+    int ID= parts[0].right(2).toInt(nullptr,16);
+    if(ID != ui->Address_lineEdit->text().toInt(nullptr)){
+        return;
+    }
+    int funtion_code=parts[0].left(1).toInt(nullptr,16);
+    if(funtion_code != 3){
+        return;
+    }
+    int DI_channel= parts[2].toInt(nullptr,16);
+    bool DI_screen[8]={0,};
+    for(int i=0;i<8;i++){
+        DI_screen[i]=DI_channel>>i &0x01;
+    }
+    DI_screen[0] == true?ui->DI_ch_1->setStyleSheet("background-color: #FFFF00;"):ui->DI_ch_1->setStyleSheet("background-color: #FFFFFF;");
+    DI_screen[1] == true?ui->DI_ch_2->setStyleSheet("background-color: #FFFF00;"):ui->DI_ch_2->setStyleSheet("background-color: #FFFFFF;");
+    DI_screen[2] == true?ui->DI_ch_3->setStyleSheet("background-color: #FFFF00;"):ui->DI_ch_3->setStyleSheet("background-color: #FFFFFF;");
+    DI_screen[3] == true?ui->DI_ch_4->setStyleSheet("background-color: #FFFF00;"):ui->DI_ch_4->setStyleSheet("background-color: #FFFFFF;");
+    DI_screen[4] == true?ui->DI_ch_5->setStyleSheet("background-color: #FFFF00;"):ui->DI_ch_5->setStyleSheet("background-color: #FFFFFF;");
+    DI_screen[5] == true?ui->DI_ch_6->setStyleSheet("background-color: #FFFF00;"):ui->DI_ch_6->setStyleSheet("background-color: #FFFFFF;");
+    DI_screen[6] == true?ui->DI_ch_7->setStyleSheet("background-color: #FFFF00;"):ui->DI_ch_7->setStyleSheet("background-color: #FFFFFF;");
+    DI_screen[7] == true?ui->DI_ch_8->setStyleSheet("background-color: #FFFF00;"):ui->DI_ch_8->setStyleSheet("background-color: #FFFFFF;");
 
+}
 void MainWindow::on_ReadyRead()
 {
-    QByteArray data = clientSocket->read(2);
-    qDebug() << "Received:" << QString(data);
-    if (data.size() == 2) {
-        data.append(clientSocket->read(static_cast<quint8>(data[1])));
-        //qDebug() << "Received:" << QString(data);
+    if(di_flag==1||do_flag==1){
+        QByteArray data = clientSocket->read(29);
+        qDebug() << "Received:" << QString(data);
+        decodeDIDO(data);
+    }else{
+        QByteArray data = clientSocket->read(5);
+        qDebug() << "Received:" << QString(data);
+        if (data.size() == 5) {
+            data.append(clientSocket->read(static_cast<quint8>(data[4])));
+            //qDebug() << "Received:" << QString(data);
+        }
+        if(live_end_flag ==2){
+            //qDebug() << "Received:" << QString(data);
+            decodeCan(data);
+        }
+        else if(live_end_flag == 3 && chart_on_flag == 1){
+            //qDebug() << "Received:" << QString(data);
+            chartDialog->appendTPS(dcodeMsgSg(809,"TPS",data,ui->NUM_TPS));
+            chartDialog->appendRPM(dcodeMsgSg(790,"N",data,ui->NUM_RPM));
+            chartDialog->appendVS(dcodeMsgSg(790,"VS",data,ui->NUM_VS));
+            chartDialog->appendTEMPENG(dcodeMsgSg(809,"TEMP_ENG",data,ui->NUM_TEMP_ENG));
+            chartDialog->appendSASANGLE(dcodeMsgSg(688,"SAS_Angle",data,ui->NUM_SAS_Angle));
+        }
+        else if(live_end_flag == 3){
+            //qDebug() << "Received:" << QString(data);
+            dcodeMsgSg(809,"TPS",data,ui->NUM_TPS);
+            dcodeMsgSg(790,"N",data,ui->NUM_RPM);
+            dcodeMsgSg(790,"VS",data,ui->NUM_VS);
+            dcodeMsgSg(809,"TEMP_ENG",data,ui->NUM_TEMP_ENG);
+            dcodeMsgSg(688,"SAS_Angle",data,ui->NUM_SAS_Angle);
+        }
     }
-    if(live_end_flag ==2){
-        //qDebug() << "Received:" << QString(data);
-        decodeCan(data);
-    }
-    else if(live_end_flag == 3 && chart_on_flag == 1){
-        //qDebug() << "Received:" << QString(data);
-        chartDialog->appendTPS(dcodeMsgSg(809,"TPS",data,ui->NUM_TPS));
-        chartDialog->appendRPM(dcodeMsgSg(790,"N",data,ui->NUM_RPM));
-        chartDialog->appendVS(dcodeMsgSg(790,"VS",data,ui->NUM_VS));
-        chartDialog->appendTEMPENG(dcodeMsgSg(809,"TEMP_ENG",data,ui->NUM_TEMP_ENG));
-        chartDialog->appendSASANGLE(dcodeMsgSg(688,"SAS_Angle",data,ui->NUM_SAS_Angle));
-    }
-    else if(live_end_flag == 3){
-        //qDebug() << "Received:" << QString(data);
-        dcodeMsgSg(809,"TPS",data,ui->NUM_TPS);
-        dcodeMsgSg(790,"N",data,ui->NUM_RPM);
-        dcodeMsgSg(790,"VS",data,ui->NUM_VS);
-        dcodeMsgSg(809,"TEMP_ENG",data,ui->NUM_TEMP_ENG);
-        dcodeMsgSg(688,"SAS_Angle",data,ui->NUM_SAS_Angle);
-    }
+
 }
 
 
@@ -612,3 +663,55 @@ void MainWindow::on_bt_chart_clicked()
         chart_on_flag=0;
     }
 }
+
+void MainWindow::on_DI_checkBox_clicked(bool checked)
+{
+    di_flag=checked;
+}
+
+void MainWindow::on_DO_checkBox_clicked(bool checked)
+{
+    do_flag=checked;
+}
+void MainWindow::updateDI(){
+    if(di_flag && live_end_flag){
+        QString send_data="3"+hexAddress +" 8"+" 00 00 00 00 00 00 00 00";
+
+        QByteArray data = send_data.toUtf8();
+        clientSocket->write(data);
+
+    }
+}
+void MainWindow::updateDO(){
+    if(do_flag && live_end_flag){
+        bool DO_dataset[8]={0,};
+        int DO_data=0;
+        DO_dataset[0]= ui->DO_comboBox_1->currentIndex();
+        DO_dataset[1]= ui->DO_comboBox_2->currentIndex();
+        DO_dataset[2]= ui->DO_comboBox_3->currentIndex();
+        DO_dataset[3]= ui->DO_comboBox_4->currentIndex();
+        DO_dataset[4]= ui->DO_comboBox_5->currentIndex();
+        DO_dataset[5]= ui->DO_comboBox_6->currentIndex();
+        DO_dataset[6]= ui->DO_comboBox_7->currentIndex();
+        DO_dataset[7]= ui->DO_comboBox_8->currentIndex();
+        for(int i=0;i<8;i++){
+            DO_data+=DO_dataset[i]<<i;
+        }
+        QString hexDOData = QString::number(DO_data, 16).toUpper();
+        hexDOData=hexDOData.rightJustified(2, '0');
+        QString send_data="1"+ hexAddress +" 8 "+hexDOData+" 00 00 00 00 00 00 00";
+        QByteArray data = send_data.toUtf8();
+        clientSocket->write(data);
+
+    }
+
+}
+
+
+void MainWindow::on_Address_lineEdit_textChanged(const QString &arg1)
+{
+    hexAddress = QString::number(arg1.toInt(nullptr), 16).toUpper();
+    hexAddress = hexAddress.rightJustified(2, '0');
+
+}
+
