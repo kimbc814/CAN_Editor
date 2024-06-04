@@ -18,7 +18,7 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>10</y>
+      <y>0</y>
       <width>621</width>
       <height>781</height>
      </rect>
@@ -1017,7 +1017,7 @@ Last Line</string>
         <x>60</x>
         <y>100</y>
         <width>41</width>
-        <height>21</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="font">
@@ -1032,7 +1032,7 @@ Last Line</string>
         <x>20</x>
         <y>100</y>
         <width>31</width>
-        <height>21</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="text">
@@ -1043,9 +1043,9 @@ Last Line</string>
       <property name="geometry">
        <rect>
         <x>60</x>
-        <y>130</y>
+        <y>140</y>
         <width>41</width>
-        <height>21</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="font">
@@ -1058,9 +1058,9 @@ Last Line</string>
       <property name="geometry">
        <rect>
         <x>60</x>
-        <y>160</y>
+        <y>180</y>
         <width>41</width>
-        <height>21</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="font">
@@ -1073,9 +1073,9 @@ Last Line</string>
       <property name="geometry">
        <rect>
         <x>60</x>
-        <y>190</y>
+        <y>220</y>
         <width>41</width>
-        <height>21</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="font">
@@ -1088,9 +1088,9 @@ Last Line</string>
       <property name="geometry">
        <rect>
         <x>60</x>
-        <y>220</y>
+        <y>260</y>
         <width>41</width>
-        <height>21</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="font">
@@ -1103,9 +1103,9 @@ Last Line</string>
       <property name="geometry">
        <rect>
         <x>60</x>
-        <y>250</y>
+        <y>300</y>
         <width>41</width>
-        <height>21</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="font">
@@ -1118,9 +1118,9 @@ Last Line</string>
       <property name="geometry">
        <rect>
         <x>60</x>
-        <y>280</y>
+        <y>340</y>
         <width>41</width>
-        <height>21</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="font">
@@ -1133,9 +1133,9 @@ Last Line</string>
       <property name="geometry">
        <rect>
         <x>60</x>
-        <y>310</y>
+        <y>380</y>
         <width>41</width>
-        <height>21</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="font">
@@ -1148,9 +1148,9 @@ Last Line</string>
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>130</y>
+        <y>140</y>
         <width>31</width>
-        <height>21</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="text">
@@ -1161,9 +1161,9 @@ Last Line</string>
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>220</y>
+        <y>260</y>
         <width>31</width>
-        <height>21</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="text">
@@ -1174,9 +1174,9 @@ Last Line</string>
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>160</y>
+        <y>180</y>
         <width>31</width>
-        <height>21</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="text">
@@ -1187,9 +1187,9 @@ Last Line</string>
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>190</y>
+        <y>220</y>
         <width>31</width>
-        <height>21</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="text">
@@ -1200,9 +1200,9 @@ Last Line</string>
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>250</y>
+        <y>300</y>
         <width>31</width>
-        <height>21</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="text">
@@ -1213,9 +1213,9 @@ Last Line</string>
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>280</y>
+        <y>340</y>
         <width>31</width>
-        <height>21</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="text">
@@ -1226,9 +1226,9 @@ Last Line</string>
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>310</y>
+        <y>380</y>
         <width>31</width>
-        <height>21</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="text">
@@ -1240,7 +1240,7 @@ Last Line</string>
        <rect>
         <x>20</x>
         <y>70</y>
-        <width>91</width>
+        <width>111</width>
         <height>21</height>
        </rect>
       </property>
@@ -1258,7 +1258,7 @@ Last Line</string>
        <rect>
         <x>140</x>
         <y>70</y>
-        <width>101</width>
+        <width>131</width>
         <height>20</height>
        </rect>
       </property>
@@ -1270,9 +1270,9 @@ Last Line</string>
       <property name="geometry">
        <rect>
         <x>140</x>
-        <y>220</y>
+        <y>260</y>
         <width>31</width>
-        <height>21</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="text">
@@ -1283,9 +1283,9 @@ Last Line</string>
       <property name="geometry">
        <rect>
         <x>140</x>
-        <y>310</y>
+        <y>380</y>
         <width>31</width>
-        <height>21</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="text">
@@ -1296,9 +1296,9 @@ Last Line</string>
       <property name="geometry">
        <rect>
         <x>140</x>
-        <y>130</y>
+        <y>140</y>
         <width>31</width>
-        <height>21</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="text">
@@ -1322,9 +1322,9 @@ Last Line</string>
       <property name="geometry">
        <rect>
         <x>140</x>
-        <y>250</y>
+        <y>300</y>
         <width>31</width>
-        <height>21</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="text">
@@ -1335,9 +1335,9 @@ Last Line</string>
       <property name="geometry">
        <rect>
         <x>140</x>
-        <y>160</y>
+        <y>180</y>
         <width>31</width>
-        <height>21</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="text">
@@ -1348,9 +1348,9 @@ Last Line</string>
       <property name="geometry">
        <rect>
         <x>140</x>
-        <y>280</y>
+        <y>340</y>
         <width>31</width>
-        <height>21</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="text">
@@ -1361,9 +1361,9 @@ Last Line</string>
       <property name="geometry">
        <rect>
         <x>140</x>
-        <y>190</y>
+        <y>220</y>
         <width>31</width>
-        <height>21</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="text">
@@ -1373,10 +1373,10 @@ Last Line</string>
      <widget class="QComboBox" name="DO_comboBox_1">
       <property name="geometry">
        <rect>
-        <x>170</x>
+        <x>180</x>
         <y>100</y>
         <width>69</width>
-        <height>22</height>
+        <height>31</height>
        </rect>
       </property>
       <item>
@@ -1393,10 +1393,10 @@ Last Line</string>
      <widget class="QComboBox" name="DO_comboBox_2">
       <property name="geometry">
        <rect>
-        <x>170</x>
-        <y>130</y>
+        <x>180</x>
+        <y>140</y>
         <width>69</width>
-        <height>22</height>
+        <height>31</height>
        </rect>
       </property>
       <item>
@@ -1413,10 +1413,10 @@ Last Line</string>
      <widget class="QComboBox" name="DO_comboBox_3">
       <property name="geometry">
        <rect>
-        <x>170</x>
-        <y>160</y>
+        <x>180</x>
+        <y>180</y>
         <width>69</width>
-        <height>22</height>
+        <height>31</height>
        </rect>
       </property>
       <item>
@@ -1433,10 +1433,10 @@ Last Line</string>
      <widget class="QComboBox" name="DO_comboBox_4">
       <property name="geometry">
        <rect>
-        <x>170</x>
-        <y>190</y>
+        <x>180</x>
+        <y>220</y>
         <width>69</width>
-        <height>22</height>
+        <height>31</height>
        </rect>
       </property>
       <item>
@@ -1453,10 +1453,10 @@ Last Line</string>
      <widget class="QComboBox" name="DO_comboBox_5">
       <property name="geometry">
        <rect>
-        <x>170</x>
-        <y>220</y>
+        <x>180</x>
+        <y>260</y>
         <width>69</width>
-        <height>22</height>
+        <height>31</height>
        </rect>
       </property>
       <item>
@@ -1473,10 +1473,10 @@ Last Line</string>
      <widget class="QComboBox" name="DO_comboBox_6">
       <property name="geometry">
        <rect>
-        <x>170</x>
-        <y>250</y>
+        <x>180</x>
+        <y>300</y>
         <width>69</width>
-        <height>22</height>
+        <height>31</height>
        </rect>
       </property>
       <item>
@@ -1493,10 +1493,10 @@ Last Line</string>
      <widget class="QComboBox" name="DO_comboBox_7">
       <property name="geometry">
        <rect>
-        <x>170</x>
-        <y>280</y>
+        <x>180</x>
+        <y>340</y>
         <width>69</width>
-        <height>22</height>
+        <height>31</height>
        </rect>
       </property>
       <item>
@@ -1513,10 +1513,10 @@ Last Line</string>
      <widget class="QComboBox" name="DO_comboBox_8">
       <property name="geometry">
        <rect>
-        <x>170</x>
-        <y>310</y>
+        <x>180</x>
+        <y>380</y>
         <width>69</width>
-        <height>22</height>
+        <height>31</height>
        </rect>
       </property>
       <item>
@@ -1545,7 +1545,7 @@ Last Line</string>
        <rect>
         <x>20</x>
         <y>10</y>
-        <width>91</width>
+        <width>111</width>
         <height>21</height>
        </rect>
       </property>
