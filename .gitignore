@@ -1,3 +1,4 @@
 build-DBC_Editor-Desktop_Qt_6_6_3_MinGW_64_bit-Debug/
 CAN_FIFO_Module/.vs/
 CAN_FIFO_Module/Debug/
+DBC_Editor/CMakeLists.txt.user
