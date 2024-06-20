@@ -11,7 +11,7 @@
 
 ## 사용 제품
 - [NTRexLAB MW USB2CAN(FIFO) v2](https://www.devicemart.co.kr/goods/view?no=1323536#goods_file)
-- [DI-DO CAN 필드버스 릴레이 모듈](https://ko.aliexpress.com/i/1005005499833780.html)
+- [DI-DO CAN 필드버스 릴레이 모듈](https://ko.aliexpress.com/item/1005005510634857.html?pdp_npi=3%40dis%21USD%21%21US%20%2414.96%21%21%21%21%21%402101583817162883464498485e9037%2112000033359625044%21im%21%21&gatewayAdapt=glo2kor)
 
 ## 노션
 - [노션](https://incredible-coconut-6d1.notion.site/DBC-Editor-ce928f07464b4e24a697b0e7f91b8e05)
