@@ -125,6 +125,7 @@ void threadReadSock(CAN_HANDLE h, SOCKET sock) {
 
 void threadSendSock(SOCKET sock) {
     while (1) {
+        /*
         send(sock, "301 8 01 00 00 00 00 00 00 00", strlen("101 8 42 44 00 00 00 00 00 00"), 0);
         //printf("%d\n", strlen("01 01 42 44 00 00 00 00 00 00"));
         Sleep(1000);
@@ -132,7 +133,7 @@ void threadSendSock(SOCKET sock) {
         //printf("%d\n", strlen("01 FF FF 00 00 00 00 00 00 00"));
         Sleep(1000);
         
-        /*
+        
         send(sock, "316 8 35 99 EC 18 99 19 20 7D", strlen("316 8 35 99 EC 18 99 19 20 7D"), 0);
         Sleep(10);
         send(sock, "329 8 87 B0 80 14 11 58 3B 18", strlen("329 8 87 B0 80 14 11 58 3B 18"), 0);
@@ -148,7 +149,7 @@ void threadSendSock(SOCKET sock) {
         send(sock, "316 8 35 99 68 10 99 19 20 7D", strlen("316 8 35 99 EC 18 99 19 20 7D"), 0);
         Sleep(10);
         */
-        /*
+        
         //DWORD dwWaitResult = WaitForSingleObject(hEvent, 1);
         std::vector<msgFrame> local_frames;
         {
@@ -187,7 +188,7 @@ void threadSendSock(SOCKET sock) {
             // 10ms 대기
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
-        */
+        
     }
 
 }
